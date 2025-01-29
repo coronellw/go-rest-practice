@@ -1,9 +1,11 @@
 package database
 
 import (
+	"context"
 	"fmt"
 	"time"
 
+	"github.com/coronellw/go-microservices/internal/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
@@ -11,13 +13,15 @@ import (
 
 type DatabaseClient interface {
 	Ready() bool
+
+	GetAllCustomers(ctx context.Context, emailAddress string) ([]models.Customer, error)
 }
 
 type Client struct {
 	DB *gorm.DB
 }
 
-func newDatabaseClient() (DatabaseClient, error) {
+func NewDatabaseClient() (DatabaseClient, error) {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%d sslmode=%s",
 		"localhost",
 		"postgres",
