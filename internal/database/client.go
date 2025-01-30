@@ -20,6 +20,7 @@ type DatabaseClient interface {
 
 	GetAllProducts(ctx context.Context, vendorID string) ([]models.Product, error)
 	AddProduct(ctx context.Context, product *models.Product) (*models.Product, error)
+	GetProductById(ctx context.Context, productId string) (*models.Product, error)
 
 	GetAllServices(ctx context.Context) ([]models.Service, error)
 	AddService(ctx context.Context, service *models.Service) (*models.Service, error)

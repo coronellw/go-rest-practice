@@ -1,7 +1,6 @@
 package server
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/coronellw/go-microservices/internal/dberrors"
@@ -42,10 +41,14 @@ func (s *EchoServer) AddCustomer(ctx echo.Context) error {
 
 func (s *EchoServer) GetCustomerById(ctx echo.Context) error {
 	customerId := ctx.Param("id")
-	fmt.Println(customerId)
 	customer, err := s.DB.GetCustomerById(ctx.Request().Context(), customerId)
-	if err != nil {
+
+	switch err.(type) {
+	case *dberrors.NotFoundError:
 		return ctx.JSON(http.StatusNotFound, err)
+	case nil:
+		return ctx.JSON(http.StatusOK, customer)
+	default:
+		return ctx.JSON(http.StatusInternalServerError, err)
 	}
-	return ctx.JSON(http.StatusOK, customer)
 }
