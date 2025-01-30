@@ -34,3 +34,25 @@ func (c Client) AddCustomer(ctx context.Context, customer *models.Customer) (*mo
 
 	return customer, nil
 }
+
+func (c Client) GetCustomerById(ctx context.Context, customerId string) (*models.Customer, error) {
+	var customer models.Customer
+	err := c.DB.WithContext(ctx).
+		Where(models.Customer{CustomerID: customerId}).
+		Find(&customer).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, &dberrors.NotFoundError{Entity: "customer", ID: customerId}
+		}
+
+		return nil, err
+	}
+
+	// No error but query execution may return empty which means not found.
+	if (customer == models.Customer{}) {
+		return nil, &dberrors.NotFoundError{Entity: "customer", ID: customerId}
+	}
+
+	return &customer, nil
+}
