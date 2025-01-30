@@ -2,8 +2,12 @@ package database
 
 import (
 	"context"
+	"errors"
 
+	"github.com/coronellw/go-microservices/internal/dberrors"
 	"github.com/coronellw/go-microservices/internal/models"
+	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 func (c Client) GetAllServices(ctx context.Context) ([]models.Service, error) {
@@ -11,4 +15,18 @@ func (c Client) GetAllServices(ctx context.Context) ([]models.Service, error) {
 	err := c.DB.WithContext(ctx).Find(&services).Error
 
 	return services, err
+}
+
+func (c Client) AddService(ctx context.Context, service *models.Service) (*models.Service, error) {
+	service.ServiceID = uuid.NewString()
+	err := c.DB.WithContext(ctx).Create(&service).Error
+
+	if err != nil {
+		if errors.Is(err, gorm.ErrDuplicatedKey) {
+			return nil, &dberrors.ConflictError{}
+		}
+		return nil, err
+	}
+
+	return service, nil
 }
