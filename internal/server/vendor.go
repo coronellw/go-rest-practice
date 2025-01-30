@@ -35,3 +35,18 @@ func (s *EchoServer) AddVendor(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusCreated, vendor)
 }
+
+func (s *EchoServer) GetVendorById(ctx echo.Context) error {
+	vendorId := ctx.Param("id")
+
+	vendor, err := s.DB.GetVendorById(ctx.Request().Context(), vendorId)
+
+	switch err.(type) {
+	case *dberrors.NotFoundError:
+		return ctx.JSON(http.StatusNotFound, err)
+	case nil:
+		return ctx.JSON(http.StatusOK, vendor)
+	default:
+		return ctx.JSON(http.StatusInternalServerError, err)
+	}
+}

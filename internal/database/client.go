@@ -28,6 +28,7 @@ type DatabaseClient interface {
 
 	GetAllVendors(ctx context.Context) ([]models.Vendor, error)
 	AddVendor(ctx context.Context, vendor *models.Vendor) (*models.Vendor, error)
+	GetVendorById(ctx context.Context, vendorId string) (*models.Vendor, error)
 }
 
 type Client struct {
