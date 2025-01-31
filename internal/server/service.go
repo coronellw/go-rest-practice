@@ -66,7 +66,7 @@ func (s *EchoServer) UpdateService(ctx echo.Context) error {
 	}
 
 	fmt.Printf("Updating service with id %s\n\nUpdate values %+v\n", serviceId, service)
-	product, err := s.DB.UpdateService(ctx.Request().Context(), service)
+	service, err := s.DB.UpdateService(ctx.Request().Context(), service)
 
 	if err != nil {
 		switch err.(type) {
@@ -79,5 +79,5 @@ func (s *EchoServer) UpdateService(ctx echo.Context) error {
 		}
 	}
 
-	return ctx.JSON(http.StatusOK, product)
+	return ctx.JSON(http.StatusOK, service)
 }

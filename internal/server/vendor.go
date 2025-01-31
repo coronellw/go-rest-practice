@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/coronellw/go-microservices/internal/dberrors"
@@ -49,4 +50,32 @@ func (s *EchoServer) GetVendorById(ctx echo.Context) error {
 	default:
 		return ctx.JSON(http.StatusInternalServerError, err)
 	}
+}
+
+func (s *EchoServer) UpdateVendor(ctx echo.Context) error {
+	vendorId := ctx.Param("id")
+	vendor := new(models.Vendor)
+	if err := ctx.Bind(&vendor); err != nil {
+		return ctx.JSON(http.StatusUnsupportedMediaType, err)
+	}
+
+	if vendorId != vendor.VendorID {
+		return ctx.JSON(http.StatusBadRequest, "id on path does not match id on body")
+	}
+
+	fmt.Printf("Updating vendor with id %s\n\nUpdate values %+v\n", vendorId, vendor)
+	vendor, err := s.DB.UpdateVendor(ctx.Request().Context(), vendor)
+
+	if err != nil {
+		switch err.(type) {
+		case *dberrors.ConflictError:
+			return ctx.JSON(http.StatusConflict, err)
+		case *dberrors.NotFoundError:
+			return ctx.JSON(http.StatusNotFound, err)
+		default:
+			return ctx.JSON(http.StatusInternalServerError, err)
+		}
+	}
+
+	return ctx.JSON(http.StatusOK, vendor)
 }
