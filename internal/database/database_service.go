@@ -8,6 +8,7 @@ import (
 	"github.com/coronellw/go-microservices/internal/models"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func (c Client) GetAllServices(ctx context.Context) ([]models.Service, error) {
@@ -50,4 +51,32 @@ func (c Client) GetServiceById(ctx context.Context, serviceId string) (*models.S
 	}
 
 	return &service, nil
+}
+
+func (c Client) UpdateService(ctx context.Context, service *models.Service) (*models.Service, error) {
+	var services []models.Service
+	result := c.DB.WithContext(ctx).
+		Model(&services).
+		Clauses(clause.Returning{}).
+		Where(models.Service{ServiceID: service.ServiceID}).
+		Updates(models.Service{
+			Name:  service.Name,
+			Price: service.Price,
+		})
+
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrDuplicatedKey) {
+			return nil, &dberrors.ConflictError{}
+		}
+		return nil, result.Error
+	}
+
+	if result.RowsAffected == 0 {
+		return nil, &dberrors.NotFoundError{
+			Entity: "service",
+			ID:     service.ServiceID,
+		}
+	}
+
+	return &services[0], nil
 }
