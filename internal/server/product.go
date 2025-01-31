@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/coronellw/go-microservices/internal/dberrors"
@@ -50,4 +51,32 @@ func (s *EchoServer) GetProductById(ctx echo.Context) error {
 	default:
 		return ctx.JSON(http.StatusInternalServerError, err)
 	}
+}
+
+func (s *EchoServer) UpdateProduct(ctx echo.Context) error {
+	productId := ctx.Param("id")
+	product := new(models.Product)
+	if err := ctx.Bind(product); err != nil {
+		return ctx.JSON(http.StatusUnsupportedMediaType, err)
+	}
+
+	if productId != product.ProductID {
+		return ctx.JSON(http.StatusBadRequest, "id on path does not match id on body")
+	}
+
+	fmt.Printf("Updating product with id %s\n\nUpdate values %+v\n", productId, product)
+	product, err := s.DB.UpdateProduct(ctx.Request().Context(), product)
+
+	if err != nil {
+		switch err.(type) {
+		case *dberrors.ConflictError:
+			return ctx.JSON(http.StatusConflict, err)
+		case *dberrors.NotFoundError:
+			return ctx.JSON(http.StatusNotFound, err)
+		default:
+			return ctx.JSON(http.StatusInternalServerError, err)
+		}
+	}
+
+	return ctx.JSON(http.StatusOK, product)
 }

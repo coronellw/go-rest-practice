@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/coronellw/go-microservices/internal/dberrors"
 	"github.com/coronellw/go-microservices/internal/models"
@@ -89,6 +88,5 @@ func (c Client) UpdateCustomer(ctx context.Context, customer *models.Customer) (
 		}
 	}
 
-	fmt.Println(customers)
 	return &customers[0], nil
 }
