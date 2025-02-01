@@ -36,6 +36,7 @@ type DatabaseClient interface {
 	AddVendor(ctx context.Context, vendor *models.Vendor) (*models.Vendor, error)
 	GetVendorById(ctx context.Context, vendorId string) (*models.Vendor, error)
 	UpdateVendor(ctx context.Context, vendor *models.Vendor) (*models.Vendor, error)
+	DeleteVendor(ctx context.Context, vendorId string) error
 }
 
 type Client struct {

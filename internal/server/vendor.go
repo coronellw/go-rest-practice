@@ -79,3 +79,12 @@ func (s *EchoServer) UpdateVendor(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, vendor)
 }
+
+func (s *EchoServer) DeleteVendor(ctx echo.Context) error {
+	vendorId := ctx.Param("id")
+	err := s.DB.DeleteVendor(ctx.Request().Context(), vendorId)
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err)
+	}
+	return ctx.JSON(http.StatusResetContent, "")
+}

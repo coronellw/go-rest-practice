@@ -84,3 +84,6 @@ func (c Client) UpdateVendor(ctx context.Context, vendor *models.Vendor) (*model
 
 	return &vendors[0], nil
 }
+func (c Client) DeleteVendor(ctx context.Context, vendorId string) error {
+	return c.DB.WithContext(ctx).Delete(models.Vendor{VendorID: vendorId}).Error
+}
