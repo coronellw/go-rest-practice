@@ -80,3 +80,14 @@ func (s *EchoServer) UpdateProduct(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, product)
 }
+
+func (s *EchoServer) DeleteProduct(ctx echo.Context) error {
+	productId := ctx.Param("id")
+	err := s.DB.DeleteProduct(ctx.Request().Context(), productId)
+
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err)
+	}
+
+	return ctx.JSON(http.StatusResetContent, "")
+}
