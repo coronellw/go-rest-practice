@@ -18,6 +18,7 @@ type Server interface {
 	AddCustomer(ctx echo.Context) error
 	GetCustomerById(ctx echo.Context) error
 	UpdateCustomer(ctx echo.Context) error
+	DeleteCustomer(ctx echo.Context) error
 
 	GetAllProducts(ctx echo.Context) error
 	AddProduct(ctx echo.Context) error
@@ -32,6 +33,7 @@ type Server interface {
 	GetAllVendors(ctx echo.Context) error
 	AddVendor(ctx echo.Context) error
 	GetVendorById(ctx echo.Context) error
+	UpdateVendor(ctx echo.Context) error
 }
 
 type EchoServer struct {
@@ -66,6 +68,7 @@ func (s *EchoServer) registerRoutes() {
 	cg.POST("", s.AddCustomer)
 	cg.GET("/:id", s.GetCustomerById)
 	cg.PUT("/:id", s.UpdateCustomer)
+	cg.DELETE("/:id", s.DeleteCustomer)
 
 	pg := s.echo.Group("/products")
 	pg.GET("", s.GetAllProducts)
@@ -83,6 +86,7 @@ func (s *EchoServer) registerRoutes() {
 	vg.GET("", s.GetAllVendors)
 	vg.POST("", s.AddVendor)
 	vg.GET("/:id", s.GetVendorById)
+	vg.PUT("/:id", s.UpdateCustomer)
 }
 
 func (s *EchoServer) Readiness(ctx echo.Context) error {

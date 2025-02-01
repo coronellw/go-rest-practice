@@ -82,3 +82,14 @@ func (s *EchoServer) UpdateCustomer(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, customer)
 }
+
+func (s *EchoServer) DeleteCustomer(ctx echo.Context) error {
+	customerId := ctx.Param("id")
+	err := s.DB.DeleteCustomer(ctx.Request().Context(), customerId)
+
+	if err != nil {
+		return ctx.JSON(http.StatusInternalServerError, err)
+	}
+
+	return ctx.JSON(http.StatusResetContent, "deleted")
+}

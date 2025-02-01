@@ -18,6 +18,7 @@ type DatabaseClient interface {
 	AddCustomer(ctx context.Context, customer *models.Customer) (*models.Customer, error)
 	GetCustomerById(ctx context.Context, customerId string) (*models.Customer, error)
 	UpdateCustomer(ctx context.Context, customer *models.Customer) (*models.Customer, error)
+	DeleteCustomer(ctx context.Context, customerId string) error
 
 	GetAllProducts(ctx context.Context, vendorID string) ([]models.Product, error)
 	AddProduct(ctx context.Context, product *models.Product) (*models.Product, error)
